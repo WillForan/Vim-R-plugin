@@ -3220,9 +3220,15 @@ if !has("win32") && !has("win64") && !has("gui_win32") && !has("gui_win64") && !
         finish
     endif
 
+    " need tmux > 1.8
+    " `tmux -V` should be 'tmux x.xx' or 'tmux master' for git
+    " if not, call it version 1
     let g:rplugin_tmux_version = system("tmux -V")
-    let g:rplugin_tmux_version = substitute(g:rplugin_tmux_version, '.*tmux \([0-9]\.[0-9]\).*', '\1', '')
-    if strlen(g:rplugin_tmux_version) != 3
+    let g:rplugin_tmux_version = substitute(g:rplugin_tmux_version, '.*tmux \(\([0-9]\.[0-9]\)\|master\).*', '\1', '')
+    if  g:rplugin_tmux_version == 'master'
+        call RWarningMsgInp(g:rplugin_tmux_version)
+        let g:rplugin_tmux_version = "2.7"
+    elseif strlen(g:rplugin_tmux_version) != 3
         let g:rplugin_tmux_version = "1.0"
     endif
     if g:rplugin_tmux_version < "1.8" && g:vimrplugin_source !~ "screenR"
